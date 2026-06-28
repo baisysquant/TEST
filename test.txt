@@ -1,0 +1,39 @@
+NFO | [缓存校验] 数据库最新数据日期: 2026-06-26，距今 2 天
+2026-06-28 15:07:24 | INFO | [缓存校验] 数据在30天有效期内，开始校验行业数量是否发生变化...
+2026-06-28 15:07:33 | WARNING | 接口校验：获取行业列表第 1 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:07:45 | WARNING | 接口校验：获取行业列表第 2 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:07:57 | WARNING | 接口校验：获取行业列表第 3 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:07:57 | WARNING | [缓存校验] 无法从接口获取行业列表，为安全起见触发全量刷新
+2026-06-28 15:07:57 | INFO | 开始从 AkShare 获取申万二级行业及成分股信息...
+2026-06-28 15:08:06 | WARNING | 获取行业列表第 1 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:08:18 | WARNING | 获取行业列表第 2 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:08:32 | WARNING | 获取行业列表第 3 次失败: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:08:32 | ERROR | __main__:main:95 | 
+2026-06-28 15:08:32 | ERROR | __main__:main:96 | ================================================================================
+2026-06-28 15:08:32 | ERROR | __main__:main:97 | [FAIL] 分析流程失败: AttributeError
+2026-06-28 15:08:32 | ERROR | __main__:main:98 |    错误信息: 'NoneType' object has no attribute 'find_all'
+2026-06-28 15:08:32 | ERROR | __main__:main:99 | ================================================================================
+python-BaseException
+Traceback (most recent call last):
+  File "D:\Program Files (x86)\PyCharm 2026.1.3\plugins\python-ce\helpers\pydev\pydevd.py", line 1647, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program Files (x86)\PyCharm 2026.1.3\plugins\python-ce\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\MainShareAnalysis.py", line 104, in <module>
+    main()
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\MainShareAnalysis.py", line 84, in main
+    coordinator = StockAnalysisCoordinatorFactory.create(config_file="config.ini")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\LogicAnalyzer\StockAnalysisCoordinator.py", line 665, in create
+    basic_info_service.sync_all_stock_basic_info()
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\DataCollection\GetStockBasicinfo.py", line 277, in sync_all_stock_basic_info
+    df = self.fetch_stock_basic_info()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\DataCollection\GetStockBasicinfo.py", line 195, in fetch_stock_basic_info
+    industry_df = ak.sw_index_second_info()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\BAISYS_QUANT\BAISYS_QUANT\.venv\Lib\site-packages\akshare\index\index_sw.py", line 87, in sw_index_second_info
+    code_raw = soup.find(name="div", attrs={"id": "level2Items"}).find_all(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'find_all'
