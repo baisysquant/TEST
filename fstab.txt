@@ -1,54 +1,5 @@
-background
-The /etc/fstab (File System Table) is a core Linux configuration file that dictates which storage devices, partitions, and network shares are mounted automatically and how they integrate into the system's directory tree.
+`findmnt` offers a highly valuable verification mode (`findmnt --verify`)， to specifically reads the `/etc/fstab` file and performs the following in-depth checks to ensure the configuration is valid
 
-
-backup
-
-Because syntax errors can cause your system to drop into an emergency shell upon booting, always back up your existing file and test new entries with sudo mount -a before restarting. 
-
-
-cp /etc/fstab  /etc/fstab_bak 
-
-
-operation 
-
-然后df -h找出外挂的共享磁盘，
-
-
-
-然后逐一查看这个路径是否已经添加到fstab，
-cat /etc/fstab | grep '/var';
-
-
-
-如果没有就编辑fstab 按照如下格式添加哎
-
-Every line in the file corresponds to a specific mount point and contains exactly six fields separated by spaces or tabs:
-Device: Identifies the storage device
-Mount Point: The directory where the device will be accessed 
-File System Type: The format of the partition (e.g. ext4 or swap)
-Options: Comma-separated mount parameters (e.g., defaults, rw, noexec, or nofail).
-Dump: An outdated backup flag. 
-Pass: Defines the order in which fsck checks the filesystem for errors at boot (Root should be 1, others 2)
-
-vi /etc/fstab  
-
-/dev/mapper/vgguestos-lvlog     /var/log   ext4    defaults 1 2
-
-
-查看格式 
-
-lsblk -o NAME,FSTYPE,MOUNTPOINT,SIZE | grep '/var/log';
-
-
-
-
-remark
- 
-GaussDB doesn’t need fstab. 
-
-GaussDB in high-performance mode requires unpartitioned, filesystem-free raw disks. fstab can only mount disks that already have a filesystem, so it can’t be written. 
-
-The database’s cluster management system (CM) automatically takes over, formats, and dynamically mounts these disks at startup, without the need for the OS to get involved. 
-
-During primary/standby switchover, disk ownership needs to shift dynamically. If it’s fixed in fstab, it can prevent smooth unmounting during node failures and even cause double-write data corruption or server boot-ups to hang.
+syntax checks (verifying the correct number of columns and checking for missing fields)
+device validity (confirming that the corresponding block device, UUID, or LABEL actually exists on the system)
+and mount point checks (verifying the existence of the directory and the correctness of its permissions).
