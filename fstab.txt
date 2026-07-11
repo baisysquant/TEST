@@ -1,5 +1,0 @@
-`findmnt` offers a highly valuable verification mode (`findmnt --verify`)， to specifically reads the `/etc/fstab` file and performs the following in-depth checks to ensure the configuration is valid
-
-syntax checks (verifying the correct number of columns and checking for missing fields)
-device validity (confirming that the corresponding block device, UUID, or LABEL actually exists on the system)
-and mount point checks (verifying the existence of the directory and the correctness of its permissions).
