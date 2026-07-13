@@ -1,0 +1,87 @@
+Authorized users only. All activity may be monitored and reported.
+Authorized users only. All activity may be monitored and reported.
+Last login: Sat Jun 27 05:07:46 2026 from 10.200.41.97
+
+
+[root@TBDCBPADPT1 ~]# cat /etc/fstab 
+# /etc/fstab
+/dev/mapper/sysos-00    /                       ext4    defaults        1 1
+UUID=3adec39c-398c-407c-a730-765b2ee59c13 /boot                   ext4    defaults        1 2
+UUID=7CF7-A0A1          /boot/efi               vfat    defaults,uid=0,gid=0,umask=077,shortname=winnt 0 2
+/dev/mapper/sysos-opt   /opt                    ext4    defaults        1 2
+/dev/mapper/sysos-tmp   /tmp                    ext4    defaults        1 2
+/dev/mapper/sysos-usr   /usr                    ext4    defaults        1 2
+/dev/mapper/sysos-var   /var                    ext4    defaults        1 2
+/dev/mapper/sysos-vmcore_files /vmcore_files           ext4    defaults        1 2
+
+
+
+[root@TBDCBPADPT1 ~]# df -h
+Filesystem                           Size  Used Avail Use% Mounted on
+devtmpfs                              16G     0   16G   0% /dev
+tmpfs                                 16G  232K   16G   1% /dev/shm
+tmpfs                                 16G  213M   16G   2% /run
+tmpfs                                 16G     0   16G   0% /sys/fs/cgroup
+/dev/mapper/sysos-00                 4.9G  4.4G  244M  95% /
+/dev/mapper/sysos-usr                5.9G  3.4G  2.2G  61% /usr
+/dev/vda2                            976M  261M  649M  29% /boot
+/dev/mapper/sysos-vmcore_files       9.8G   37M  9.3G   1% /vmcore_files
+/dev/mapper/sysos-tmp                7.9G  827M  6.6G  11% /tmp
+/dev/mapper/sysos-var                4.9G  1.4G  3.3G  31% /var
+/dev/vda1                            920M  6.3M  913M   1% /boot/efi
+/dev/mapper/sysos-opt                9.8G  4.8G  4.6G  52% /opt
+tmpfs                                3.1G     0  3.1G   0% /run/user/6351
+/dev/mapper/vgapp-lvapp               30G   18G   11G  62% /onip/app
+/dev/mapper/vgapp-lvappbackup        4.9G   99M  4.5G   3% /onip/backup
+/dev/mapper/vgguestos-lvlog          9.8G  3.9G  5.5G  42% /var/log
+/dev/mapper/vgguestos-lvaudit        2.0G  503M  1.3G  28% /var/log/audit
+/dev/mapper/vgguestos-lvhome          20G  4.8G   14G  26% /home
+/dev/mapper/vgguestos-lvcorefiles     20G   51M   19G   1% /corefiles
+/dev/mapper/vgguestos-lvgdr          2.0G  6.0M  1.8G   1% /opt/gdr
+/dev/mapper/vgguestos-lvtmpdownload   30G  7.8G   21G  28% /tmp/uniagent-download
+/dev/mapper/vgguestos-lvsimpana      9.8G   37M  9.3G   1% /opt/simpana
+/dev/mapper/vgadptmdb-lvadptmdb       59G   14G   43G  25% /onip/gmdb
+10.24.0.49:/offcdr                    49G   56M   47G   1% /onip/offcdr_mount
+tmpfs                                3.1G     0  3.1G   0% /run/user/1022
+tmpfs                                3.1G     0  3.1G   0% /run/user/1021
+tmpfs                                3.1G     0  3.1G   0% /run/user/0
+
+
+
+[root@TBDCBPADPT1 ~]# cat /etc/fstab | grep '/var/log';
+[root@TBDCBPADPT1 ~]# 
+
+
+
+[root@TBDCBPADPT1 ~]# lsblk -o NAME,FSTYPE,MOUNTPOINT,SIZE | grep '/var/log';
+├─vgguestos-lvlog         ext4        /var/log                          10G
+├─vgguestos-lvaudit       ext4        /var/log/audit                     2G
+
+
+
+[root@TBDCBPADPT1 ~]# vi /etc/fstab  
+[root@TBDCBPADPT1 ~]# cat /etc/fstab | grep '/var/log';
+/dev/mapper/vgguestos-lvlog     /var/log   ext4    defaults 1 2
+
+
+[root@TBDCBPADPT1 ~]# 
+[root@TBDCBPADPT1 ~]# reboot
+
+
+
+Authorized users only. All activity may be monitored and reported.
+Authorized users only. All activity may be monitored and reported.
+Last login: Sat Jul 11 22:40:33 2026 from 10.200.41.96
+[root@TBDCBPADPT1 ~]# 
+
+
+[root@TBDCBPADPT1 ~]# cd /var/log
+[root@TBDCBPADPT1 log]# touch test.txt
+[root@TBDCBPADPT1 log]# ll test.txt 
+-rw-r----- 1 root root 0 Jul 11 15:58 test.txt
+[root@TBDCBPADPT1 log]# 
+
+
+[root@TBDCBPADPT1 log]# findmnt --verify
+Success, no errors or warnings detected
+[root@TBDCBPADPT1 log]# 
