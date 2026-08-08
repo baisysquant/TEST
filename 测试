@@ -1,6 +1,0 @@
-Halting program.
-Uncaught exception from main loop:
-{"name": "RuntimeError", "message": "memory access out of bounds", "stack": "RuntimeError: memory access out of bounds\n    at wasm://wasm/07c5741e:wasm-function[55073]:0xe49d8e\n    at wasm://wasm/07c5741e:wasm-function[55072]:0xe49caf\n    at wasm://wasm/07c5741e:wasm-function[55025]:0xe446d9\n    at wasm://wasm/07c5741e:wasm-function[55020]:0xe42c31\n    at wasm://wasm/07c5741e:wasm-function[55090]:0xe4aba3\n    at wasm://wasm/07c5741e:wasm-function[55088]:0xe4a9be\n    at wasm://wasm/07c5741e:wasm-function[58065]:0xf2b027\n    at wasm://wasm/07c5741e:wasm-function[59890]:0xf53812\n    at wasm://wasm/07c5741e:wasm-function[59884]:0xf53074\n    at wasm://wasm/07c5741e:wasm-function[77741]:0x18da3e5"}
-02:03:19.202 [ERROR] [Unity]  ArgumentException: AudioClip.SetData failed; invalid offsetSamples
-  at UnityEngine.AudioClip.SetData (System.Single[] data, System.Int32 offsetSamples) [0x00000] in <00000000000000000000000000000000>:0 
-
