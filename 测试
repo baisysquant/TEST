@@ -1,8 +1,0 @@
-UnityManager.version =  undefined-undefined-undefined
-IndexedDB is not available. Data will not persist in cache and PlayerPrefs will not be saved.
-[audio] unlock attempted on first touch
-05:34:42.600 [INFO] [Unity]  SendMessage: object UNBridge not found!
-
-05:34:42.600 [INFO] [Unity]  SendMessage: object UNBridge not found!
-
-05:31:05.846 [WARN] [StarkSDK]  api [onXScreenChange] not supported.
