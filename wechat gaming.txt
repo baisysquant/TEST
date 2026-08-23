@@ -1,1 +1,4 @@
 wx909af6c0bf2804ef
+
+
+https://github.com/wechat-miniprogram/minigame-tuanjie-transform-sdk.git
