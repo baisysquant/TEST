@@ -1,0 +1,41 @@
+SELECT OFFERING_ID, OFFERING_NAME , OFFERING_STATUS  FROM PM_OFFERING_BASEINFO 
+
+
+ SELECT FREE_UNIT_TYPE_ID, FREE_UNIT_TYPE_NAME  , MEASUREMENT_NAME FROM PE_FREE_UNIT_TYPE fut 
+ LEFT JOIN SYS_MEASUREMENT  sm ON sm.MEASUREMENT_ID = fut.MEASURE_UNIT_ID
+
+
+SELECT
+	CDR_ID,
+	PRI_IDENTITY,
+	START_DATE,
+	CASE
+		STD_EVT_TYPE_ID WHEN '1401' THEN 'recurring charge'
+		WHEN '14001' THEN 'recurring charge'
+		WHEN '1402' THEN 'recurring bonus'
+		WHEN '14002' THEN 'recurring bonus'
+	END AS event_type ,
+	REGEXP_SUBSTR(
+        REPLACE(REPLACE(CHARGE_LIST, '{', ''), '(', ''), 
+        '([^,]+)', 1, 9
+    ) AS offering_id,
+ ACTUAL_CHARGE,
+	REGEXP_SUBSTR(
+        BONUS_FREE_UNIT_LIST, 
+        '^[{(]*[^,]+,[^,]+,([^,)]+)', 
+        1, 1, 'i', 1
+    ) AS bonus_object,
+	REGEXP_SUBSTR(
+        BONUS_FREE_UNIT_LIST, 
+        '^[{(]*[^,]+,[^,]+,[^,]+,[^,]+,([^,)]+)', 
+        1, 1, 'i', 1
+    ) AS bonus_amount
+	
+FROM
+	EF_CDR_4Q_202608
+WHERE
+	STD_EVT_TYPE_ID IN (1401, 14001)
+	AND REGEXP_SUBSTR(
+        REPLACE(REPLACE(CHARGE_LIST, '{', ''), '(', ''), 
+        '([^,]+)', 1, 9
+    ) IS NOT NULL;
