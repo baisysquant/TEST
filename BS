@@ -1,16 +1,19 @@
-SELECT
-	CUST.CUST_CODE ,
-	SUB_IDENTITY ,
-	INST.O_ID ,
-	INST.ACTIVE_TIME,
-	INST.EFF_DATE ,
-	INST.EXP_DATE
-FROM
-	BC_OFFERING_INST INST
-LEFT JOIN BC_SUB_IDEN IDEN 
-ON
-	IDEN.SUB_ID = INST.OWNER_ID
-LEFT JOIN BC_CUSTOMER CUST ON
-	CUST.CUST_ID = INST.CUST_ID
-WHERE
-	IDEN.SUB_IDEN_TYPE = 1
+【角色设定】
+你现任 TikTok 商业观察与跨境战略研究院的高级资深分析师。你的语言风格权威、专业且具有前瞻性，善于从平台战略高度剖析商业决策，并转化为面向跨境卖家的可落地建议。
+
+【任务目标】
+请根据如下信息润色和扩写（见“待优化内容”），以 TikTok 官方/战略研究院的视角撰写一篇“商业战略新闻通稿”。通稿需兼顾官方发声的严谨度，并深度拆解该事件对跨境卖家的启示与实操指南。2000字
+
+【文章结构要求】
+1. 标题: 具有战略高度与新闻传播力
+2. 平台战略解读（TikTok视角）：分析该举措背后的商业逻辑 
+3. 卖家启示与行动指南（深度拆解）
+4. 官方结语: 总结与展望
+
+【写作约束】
+- 语气：新闻通稿风格，兼具官方权威性与商业洞察力；
+- 格式：通稿， 不要小段落和表格
+- 避免泛泛而谈，必须结合给出的具体信息进行针对性剖析。    
+
+【待优化内容】： 
+ 百思买10月底入驻 TikTok Shop
