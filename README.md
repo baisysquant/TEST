@@ -1,1 +1,10 @@
-天地万物，各有其时。时运未至，潜龙勿用。匿迹避世，非吾势弱；敛锋积健，岂言放弃！处困顿之渊，当筑坚城、广储粮，深蓄凌云之志。及至风云突变，骤雨大作，自当飞龙在天，横绝四海，方不负长久之坚守！
+"Perdí mi tarjeta SIM y necesito un reemplazo. Aquí tiene mi información:"
+
+Service Number:
+222400125
+
+ICCID:
+8924001081131376347
+
+IMSI:
+627010103137634
