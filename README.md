@@ -1,10 +1,1 @@
-"Perdí mi tarjeta SIM y necesito un reemplazo. Aquí tiene mi información:"
-
-Service Number:
-222400125
-
-ICCID:
-8924001081131376347
-
-IMSI:
-627010103137634
+https://seller.tiktokglobalshop.com/university/course?learning_id=806823071614737&role=1&course_type=1&from=search&content_id=3226644308821766&identity=1
