@@ -1,1 +1,5 @@
-https://seller.tiktokglobalshop.com/university/course?learning_id=806823071614737&role=1&course_type=1&from=search&content_id=3226644308821766&identity=1
+购方名称：武汉钧烁鸿宇科技有限公司
+发票代码：
+发票号码：26312000006469450426
+开票金额：￥10.00
+点击链接查看发票：https://nnfp.jss.com.cn/b1cTGbukJO-TaT5
