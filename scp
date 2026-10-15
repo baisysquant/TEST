@@ -1,7 +1,1 @@
-
-scp  cbs_cdr*2026100*162*.add  inv@10.22.0.45:/onip/invcdr15_mount/output/pps/normal/backup ;
-scp  cbs_cdr*2026101*162*.add  inv@10.22.0.45:/onip/invcdr155_mount/output/pps/normal/backup ;
-scp  cbs_cdr*2026092*162*.add  inv@10.22.0.45:/onip/invcdr155_mount/output/pps/normal/backup ;
-scp  cbs_cdr*2026092*169*.add  inv@10.22.0.45:/onip/invcdr156_mount/output/pps/normal/backup ;
-scp  cbs_cdr*2026100*169*.add  inv@10.22.0.45:/onip/invcdr156_mount/output/pps/normal/backup ;
-scp  cbs_cdr*2026101*169*.add  inv@10.22.0.45:/onip/invcdr156_mount/output/pps/normal/backup ;
+https://ns1.getesa.gq/access/retrieve/KqhYxyYYo8Uur4Upp_CgpSpV38d3PrH6N8oZJJ4d868
