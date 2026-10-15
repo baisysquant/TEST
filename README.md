@@ -1,11 +1,221 @@
-随着全球用户视听习惯彻底倒向短视频，字节跳动正将国内验证成功的“短视频剧集”模式加速推向全球。市场调研结构Sensor Tower的最新报告显示旗下海外短剧平台 PineDrama 上线不到一年，全球下载量惊人地突破 1 亿次，日活直逼 700 万！ 这一场娱乐范式的革新，不仅是一次大厂的内容破局，更为全球跨境卖家开启了一个全新的、高粘性的商业化流量红利入口。风口已至，唯有顺势而为的卖家，才能在这场数字经济的洗牌中占得先机。
+#!/bin/bash
+#===============================================================================
+# scp_cdr_backup.sh
+#
+# 扫描本脚本所在目录下的 cbs_cdr*.add 话单, 按文件名中的节点号分流并 scp 到
+# 目标端 backup 目录; 仅处理文件名日期在 20260927~20261014(含) 期间的话单。
+#
+#   文件名含 162 -> inv@10.22.0.45:/onip/invcdr155_mount/output/pps/normal/backup
+#   文件名含 169 -> inv@10.22.0.45:/onip/invcdr156_mount/output/pps/normal/backup
+#
+# 说明:
+#   * 源文件不删除, 仅复制(安全, 可重复执行)。
+#   * 认证: 口令写在本脚本内。优先用 sshpass; 没有则用 SSH_ASKPASS + setsid
+#     回退(已把 stdin 重定向为 /dev/null, 兼容 OpenSSH 7.x 不读 askpass 的情况)。
+#   * 目标目录不存在时自动创建(mkdir -p)。
+#
+# 用法:
+#   bash scp_cdr_backup.sh            正常执行
+#   DRY_RUN=true bash scp_cdr_backup.sh   只列出将要传输的文件, 不实际传输
+#===============================================================================
+set -uo pipefail
+export LC_ALL=C
 
-在海外市场，厂家普遍使用“开头几集免费，后面付费观看”的传统套路，而PineDrama直接搬来广告解锁剧集的免费机制来迎合用户，而且PineDrama作为字节旗下产品，自然和 TikTok 深度整合，用户可以直接从TikTok 跳转登录，流量转化路径短，获客成本低。再结合“农村包围城市”进军巴西、印度尼西亚等新兴市场，迅速迎来用户青睐并建立起来庞大的生态。 
+# ---------------------------- 配置 -------------------------------------------
+DST_HOST="10.22.0.45"
+DST_USER="inv"
+DST_PASS='I#nv_0001'
+DST_PORT=22
 
-在内容运营上，PineDrama积极构建“本土文化+本地演员+本地剧本”的深度本地化策略，根据市场设置用户的文化偏好。在内容创作和运营上也积极投入AI辅助，使得平台能够持续输出高质量、情节紧凑、反转多、新鲜的内容。 短剧平台的崛起，不仅改变了人们观看影视内容的方式，还开启了一个全新的商业化的流量入口。传统互联网广告的获客成本越来越高，而且已被用户排斥。而短剧内容粘性强、用户停留时间长，是性价比很高的营销方式。 短剧每集只有几分钟，节奏快、情绪饱满。品牌可以通过定制剧情、植入道具、场景软广告等方式，自然地融入故事情节。容易潜移默化地让消费者接受，以便提高品牌在海外市场的信任度和转化率。
+DATE_FROM="20260927"
+DATE_TO="20261014"
 
- PineDrama和 TikTok 有天然的联系。卖家可以考虑打造自己的营销生态，综合利用起来字节家族的全部产品和渠道，建立一个完整的营销闭环。在短剧平台进行IP曝光，然后把精彩片段剪辑成 TikTok 短视频进行二次传播，再通过达人带货，最后通过 TikTok Shop 转化。整个链路，可以快速转化为订单，实现“边看边买”。 做跨境，要明白人天然对自己本土文化有依赖，要学会接受和打造本土化内容运营。要深度分析用户的需求和想法，借助AI写视频脚本，生成多国语言的视频。用“讲故事、像连续剧、能打动人”的短视频推广方式，把产品的卖点自然地融入到短剧内容中，而不是直接打硬广告。这样做的话，视频的点赞和点击转化率会提高很多。 
+BACKUP_162="/onip/invcdr155_mount/output/pps/normal/backup"
+BACKUP_169="/onip/invcdr156_mount/output/pps/normal/backup"
 
-字节跳动凭借 PineDrama在海外的野蛮生长，再次证明了“先用免费内容吸引海量用户，再通过广告变现，最后利用生态放大价值”的商业模式在全世界娱乐业都完全行得通。这也标志着，中国互联网公司在海外的竞争，已经从单纯的“推出一个 App”升级为“整套生态、商业模式以及内容制作能力”的全面输出。 
+CHUNK=200              # 每次 scp 传输的文件数(避免命令行超长)
+CONNECT_TIMEOUT=20
+DRY_RUN="${DRY_RUN:-false}"
+# ---------------------------------------------------------------------------
 
-商机往往转瞬即逝。有远见的跨境卖家，要想在全球市场占得先机、实现品牌与销量的双重增长，就必须紧跟字节的战略步伐，深刻洞察当地用户的消费习惯，并积极拥抱“用内容带动增长”的全新模式。流量新红利的列车已经开出，这一次，你准备好上车了吗？ #字节短剧 #PineDrama #TIKTOK #跨境 #出海
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+LOG_PREFIX="$(basename "$0")"
+
+log()  { printf '%s [%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$LOG_PREFIX" "$*"; }
+die()  { log "ERROR: $*" >&2; exit 1; }
+is_true() { case "$1" in [Tt]*|[Yy]*|1) return 0 ;; *) return 1 ;; esac; }
+
+SSH_BIN="$(command -v ssh 2>/dev/null || true)"
+SCP_BIN="$(command -v scp 2>/dev/null || true)"
+[ -n "$SCP_BIN" ] || die "未找到 scp, 请确认 openssh-clients 已安装"
+
+# ---------------------------- 认证前缀 ---------------------------------------
+CONN_PREFIX=( env )        # 非空数组, 避免 set -u + 空数组展开问题
+ASKPASS_MODE=0
+TMP_AUTH=""
+
+setup_auth() {
+    local sshpass_bin setsid_bin
+    sshpass_bin="$(command -v sshpass 2>/dev/null || true)"
+    setsid_bin="$(command -v setsid 2>/dev/null || true)"
+    if [ -n "$sshpass_bin" ]; then
+        CONN_PREFIX=( "$sshpass_bin" -p "$DST_PASS" )
+        ASKPASS_MODE=0
+        log "认证方式: sshpass"
+    elif [ -n "$setsid_bin" ]; then
+        TMP_AUTH="$(mktemp -d "${TMPDIR:-/tmp}/scp_cdr.XXXXXX")" || die "无法创建临时目录"
+        local pass_file="$TMP_AUTH/.pass" ask_file="$TMP_AUTH/.askpass"
+        printf '%s' "$DST_PASS" > "$pass_file"
+        chmod 600 "$pass_file" 2>/dev/null || true
+        printf '#!/bin/sh\ncat %s\n' "$pass_file" > "$ask_file"
+        chmod 700 "$ask_file" 2>/dev/null || true
+        CONN_PREFIX=( env "SSH_ASKPASS=$ask_file" "SSH_ASKPASS_REQUIRE=force"
+                      "DISPLAY=:0" "$setsid_bin" -w )
+        ASKPASS_MODE=1
+        trap 'rm -rf "$TMP_AUTH"' EXIT
+        log "认证方式: SSH_ASKPASS + setsid (无 sshpass)"
+    else
+        die "口令认证需要 sshpass 或 setsid, 请安装: yum install -y sshpass"
+    fi
+}
+
+# 追加到 ssh/scp 的通用选项(目标端 host key 不做校验, 适配一次性搬运)
+common_opts() {
+    SSH_OPTS=( -p "$DST_PORT" -o "ConnectTimeout=$CONNECT_TIMEOUT" -o LogLevel=ERROR
+               -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+               -o ServerAliveInterval=15 -o ServerAliveCountMax=3 )
+    SCP_OPTS=( -P "$DST_PORT" -o "ConnectTimeout=$CONNECT_TIMEOUT" -o LogLevel=ERROR
+               -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+               -o ServerAliveInterval=15 -o ServerAliveCountMax=3 )
+}
+
+# ssh <命令>   —— askpass 模式下必须让 stdin 不是 tty, 否则 OpenSSH 7.x 不读 askpass
+run_ssh() {
+    if [ "$ASKPASS_MODE" = "1" ]; then
+        "${CONN_PREFIX[@]}" "$SSH_BIN" "${SSH_OPTS[@]}" "$DST_USER@$DST_HOST" "$1" < /dev/null
+    else
+        "${CONN_PREFIX[@]}" "$SSH_BIN" "${SSH_OPTS[@]}" "$DST_USER@$DST_HOST" "$1"
+    fi
+}
+
+# scp <目标目录> <文件...>
+run_scp() {
+    local dest="$1"; shift
+    if [ "$ASKPASS_MODE" = "1" ]; then
+        "${CONN_PREFIX[@]}" "$SCP_BIN" "${SCP_OPTS[@]}" "$@" "$DST_USER@$DST_HOST:$dest" < /dev/null
+    else
+        "${CONN_PREFIX[@]}" "$SCP_BIN" "${SCP_OPTS[@]}" "$@" "$DST_USER@$DST_HOST:$dest"
+    fi
+}
+
+# ---------------------------- 扫描 -------------------------------------------
+# 从文件名里取出第一段连续 8 位数字(YYYYMMDD), 不在区间内则跳过。
+FILES_162=()
+FILES_169=()
+
+scan() {
+    local f base d
+    while IFS= read -r -d '' f; do
+        base="$(basename "$f")"
+        if [[ "$base" =~ ([0-9]{8}) ]]; then
+            d="${BASH_REMATCH[1]}"
+        else
+            continue                      # 文件名无 8 位日期, 不处理
+        fi
+        # shellcheck disable=SC2071  # YYYYMMDD 为等长补零字符串, 字典序比较即日期比较
+        if [[ "$d" < "$DATE_FROM" || "$d" > "$DATE_TO" ]]; then
+            continue                      # 日期不在 20260927~20261014 区间
+        fi
+        if [[ "$base" == *162* && "$base" == *169* ]]; then
+            log "WARN: 同时含 162 与 169, 无法判定归属, 跳过: $base"
+        elif [[ "$base" == *162* ]]; then
+            FILES_162+=( "$f" )
+        elif [[ "$base" == *169* ]]; then
+            FILES_169+=( "$f" )
+        fi
+    done < <(find "$SCRIPT_DIR" -maxdepth 1 -type f -name 'cbs_cdr*.add' -print0)
+}
+
+# ---------------------------- 传输 -------------------------------------------
+# transfer <标签> <目标目录> <文件...>
+transfer() {
+    local label="$1" dest="$2"; shift 2
+    local -a files=( "$@" )
+    local total="${#files[@]}" ok=0 fail=0 i=0
+
+    if [ "$total" -eq 0 ]; then
+        log "[$label] 无符合条件的文件"
+        return 0
+    fi
+    log "[$label] 共 $total 个待传输 -> $DST_USER@$DST_HOST:$dest"
+
+    if is_true "$DRY_RUN"; then
+        local f
+        for f in "${files[@]}"; do log "[$label] DRY-RUN: $(basename "$f")"; done
+        return 0
+    fi
+
+    # 确保目标目录存在
+    if ! run_ssh "mkdir -p \"$dest\""; then
+        log "ERROR: [$label] 无法创建目标目录 $dest"
+        return 1
+    fi
+
+    while [ "$i" -lt "$total" ]; do
+        local -a chunk=( "${files[@]:i:CHUNK}" )
+        if run_scp "$dest" "${chunk[@]}" 2>/dev/null; then
+            ok=$(( ok + ${#chunk[@]} ))
+        else
+            # 整批失败时逐个重试, 精确定位失败文件, 不影响其余文件
+            local f
+            for f in "${chunk[@]}"; do
+                if run_scp "$dest" "$f" 2>/dev/null; then
+                    ok=$(( ok + 1 ))
+                else
+                    fail=$(( fail + 1 ))
+                    log "WARN: [$label] 传输失败: $(basename "$f")"
+                fi
+            done
+        fi
+        i=$(( i + CHUNK ))
+    done
+
+    log "[$label] 完成: 总数=$total 成功=$ok 失败=$fail"
+    [ "$fail" -eq 0 ]
+}
+
+# ---------------------------- 主流程 -----------------------------------------
+main() {
+    log "脚本目录: $SCRIPT_DIR"
+    log "日期区间: $DATE_FROM ~ $DATE_TO (含)"
+    common_opts
+    if is_true "$DRY_RUN"; then
+        log "DRY-RUN 模式: 只列出将传输的文件, 不连接目标端(跳过认证)"
+    else
+        setup_auth
+    fi
+
+    scan
+    log "扫描结果: 162=${#FILES_162[@]} 个, 169=${#FILES_169[@]} 个"
+
+    local rc=0
+    if [ "${#FILES_162[@]}" -gt 0 ]; then
+        transfer "162" "$BACKUP_162" "${FILES_162[@]}" || rc=1
+    else
+        log "[162] 无符合条件的文件"
+    fi
+    if [ "${#FILES_169[@]}" -gt 0 ]; then
+        transfer "169" "$BACKUP_169" "${FILES_169[@]}" || rc=1
+    else
+        log "[169] 无符合条件的文件"
+    fi
+
+    if [ "$rc" -eq 0 ]; then
+        log "全部完成, 无失败文件"
+    else
+        log "存在传输失败的文件, 请查看上面的 WARN 日志; 源文件未删除, 可直接重试"
+    fi
+    return $rc
+}
+
+main "$@"
