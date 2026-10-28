@@ -1,12 +1,9 @@
-WAGame.js:1 Error: MiniProgramError
-module '@swc/runtime/_iterable_to_array.js' is not defined, require args is './_iterable_to_array.js'
-    at P (WAGameSubContext.js:1)
-    at n (WAGameSubContext.js:1)
-    at _to_consumable_array.js:1
-    at Module.d (WAGameSubContext.js:1)
-    at p (WAGameSubContext.js:1)
-    at WAGameSubContext.js:1
-    at Object.runWith (WAGameSubContext.js:1)
-    at P (WAGameSubContext.js:1)
-    at n (WAGameSubContext.js:1)
-    at game.js:9****
+要添加声音特效，要可爱软软，然后还要再主界面左上角添加系统声音开关
+
+界面上上浮提示字体太小，再加大一号
+
+
+主界面特技池按钮，不要1/10数字，要直接写特技池 
+
+
+每一局，只允许5次悔棋后退，超过5次后要弹出广告，广告结束后直接回退5步，如果广告加载失败就提示广告加载失败无法回退
